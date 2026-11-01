@@ -1,0 +1,22 @@
+{
+  "name": "meta-space-modelado",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "test": "node --test test/*.test.ts",
+    "check": "tsc --noEmit && node --test test/*.test.ts"
+  },
+  "dependencies": {
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@types/three": "0.186.0",
+    "typescript": "5.9.3",
+    "vite": "8.3.5"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}
