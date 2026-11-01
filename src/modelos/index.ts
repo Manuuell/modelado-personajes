@@ -1,6 +1,9 @@
+import { crearAltarDesafio } from './altar-desafio.ts';
+import { crearAltarJefe } from './altar-jefe.ts';
 import { crearAstronauta } from './astronauta.ts';
 import { crearAvispa } from './avispa.ts';
 import { crearBaliza } from './baliza.ts';
+import { crearCaja } from './caja-premio.ts';
 import { crearCaparazon } from './caparazon.ts';
 import { crearHeraldo } from './heraldo.ts';
 import { crearNpcBotanica } from './npc-botanica.ts';
@@ -9,10 +12,12 @@ import { crearNpcMecanica } from './npc-mecanica.ts';
 import { crearNpcVigia } from './npc-vigia.ts';
 import { crearOjoHelios } from './ojo-helios.ts';
 import { crearRecolector } from './recolector.ts';
+import { crearRefugio } from './refugio.ts';
 import { crearSaltador } from './saltador.ts';
 import { crearSegador } from './segador.ts';
 import { crearSegadorJefe } from './segador-jefe.ts';
 import { crearSembrador } from './sembrador.ts';
+import { crearTorreVelo } from './torre-velo.ts';
 import type { Modelo } from './kit.ts';
 
 export type { Animacion, Modelo } from './kit.ts';
@@ -41,4 +46,13 @@ export const CATALOGO: { id: string; nombre: string; tipo?: Tipo; crear: () => M
   { id: 'npc-vigia', nombre: 'Tali, la vigía', tipo: 'npc', crear: crearNpcVigia },
   { id: 'npc-botanica', nombre: 'Lis, la botánica', tipo: 'npc', crear: crearNpcBotanica },
   { id: 'npc-chatarrero', nombre: 'Bruno, el chatarrero', tipo: 'npc', crear: crearNpcChatarrero },
+  { id: 'altar-cosecha', nombre: 'Altar de la Cosecha', tipo: 'mapa', crear: () => crearAltarJefe('cosecha') },
+  { id: 'altar-heraldo', nombre: 'Altar del Velo', tipo: 'mapa', crear: () => crearAltarJefe('heraldo') },
+  { id: 'altar-ojo', nombre: 'Altar del Ojo', tipo: 'mapa', crear: () => crearAltarJefe('ojo') },
+  { id: 'altar-desafio', nombre: 'Ara del Sol', tipo: 'mapa', crear: crearAltarDesafio },
+  { id: 'caja-suministros', nombre: 'Caja de suministros', tipo: 'objeto', crear: () => crearCaja('suministros') },
+  { id: 'caja-helios', nombre: 'Cofre de HELIOS', tipo: 'objeto', crear: () => crearCaja('helios') },
+  { id: 'caja-reliquia', nombre: 'Cofre de reliquia', tipo: 'objeto', crear: () => crearCaja('reliquia') },
+  { id: 'torre-velo', nombre: 'Torre del Velo', tipo: 'mapa', crear: crearTorreVelo },
+  { id: 'refugio', nombre: 'Refugio', tipo: 'mapa', crear: crearRefugio },
 ];
