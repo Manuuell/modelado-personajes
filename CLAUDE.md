@@ -53,7 +53,10 @@ $CH --headless=new --use-angle=swiftshader --enable-unsafe-swiftshader --hide-sc
 - `?glb=<id>` con `--dump-dom` deja el GLB en base64 dentro de `<pre id="glb">`.
 
 El mapa, igual, con `mapa.html` (`--window-size=1600,900`):
-`?vista=jugador|aerea|acido|vadeo|montana|ruinas|refugio|carta`, `&hud=0`
-para quitar la interfaz. Las capturas van en `referencias/mundo/`.
+`?vista=jugador|salida|aerea|acido|vadeo|montana|ruinas|refugio|nave|carta`,
+`&hud=0` para quitar la interfaz y `&mejoras` para la subida de nivel encima.
+Las capturas van en `referencias/mundo/`. Los iconos y las tarjetas de mejora
+se revisan en `mejoras.html` (`?vista=iconos|tarjetas|otras`). La cinemática
+de entrada, en `intro.html` (`?t=` la congela en ese segundo).
 
 Si el entorno no tiene navegador, basta con `npm run check`.

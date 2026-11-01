@@ -36,3 +36,10 @@ http://127.0.0.1:5174/intro.html (`?t=4.2` la congela en ese segundo).
 Mantiene la firma `showIntro(root, onDone, opts)` de la del juego: para
 llevarla, copia `src/intro.ts` a `web/src/intro.ts` y `src/modelos/nave.ts` a
 `web/src/modelos/nave.ts`.
+
+## Nave posada, iconos y subida de nivel
+
+La nave también está posada en el mapa, junto a la salida. Las mejoras tienen
+iconos nuevos con el dibujo de los modelos y la subida de nivel es una
+pantalla de tarjetas animadas: http://127.0.0.1:5174/mejoras.html. Qué copiar
+al juego, en [MUNDO.md](MUNDO.md).

@@ -422,11 +422,17 @@ Lanzadera de la cinemática de entrada (`src/intro.ts`). Blanco y naranja como
 el especialista; el visor del morro con dos ojos cyan le da cara.
 
 - **Tamaño:** 3,3 m de morro a cola, 3,4 m de envergadura. El casco va a 1,5 m
-  del suelo (vuela). Unos 22.600 triángulos a detalle 1 (se dibuja una sola vez).
+  del suelo (vuela). Unos 28.600 triángulos a detalle 1 (se dibuja una sola vez).
+- **Posada en el mapa** (`nave-posada`, tipo mapa): la misma con
+  `crearNavePosada()`, a ×3,5 con `agrandar` (11,6 m de largo, 6,5 de alto),
+  detalle 0,7 y `Posada` como primer clip. Unos 17.100 triángulos.
 - **Nodos:** `casco` (todo cuelga de él), `ojo_i`/`ojo_d`, `antena`,
-  `ala_i`/`ala_d`, `motor_i`/`motor_d`/`motor_c`, `llama_i`/`llama_d`/`llama_c`
-  (la escala z es el largo de la llama), `cola`, `retro_i`/`retro_d` (escala
-  casi cero salvo al frenar).
+  `ala_i`/`ala_d` con `luz_i`/`luz_d` en la punta, `motor_i`/`motor_d`/`motor_c`,
+  `llama_i`/`llama_d`/`llama_c` (la escala z es el largo de la llama), `cola`,
+  `retro_i`/`retro_d` (escala casi cero salvo al frenar), `escotilla` (gira
+  sobre su borde de abajo: −127,5° en z la deja de rampa) con
+  `escotilla_punta` (sale 0,5 m por la rampa) y `pata_i`/`pata_d`/`pata_n`
+  (escala casi cero en vuelo).
 
 | Clip | Duración | Bucle | Qué hace |
 |---|---|---|---|
@@ -434,6 +440,8 @@ el especialista; el visor del morro con dos ojos cyan le da cara.
 | Volar | 1,2 s | sí | Crucero: llamas largas, antena peinada hacia atrás |
 | Turbo | 0,8 s | sí | Llamas enormes, alas plegadas, ojos entornados |
 | Frenar | 1,0 s | no | Encabrita el morro, retros encendidos de 0,08 a 0,6 s |
+| Aterrizar | 2,6 s | no | Baja 0,51 m, saca las patas (0,25–0,9 s), toca suelo a 1,45 s con rebote, apaga motores y abre la rampa (1,9–2,6 s) |
+| Posada | 3,0 s | sí | En el suelo: patas fuera, motores apagados, rampa abierta, luces a destiempo, ojos que miran alrededor |
 
 ### Tiempos de la cinemática
 

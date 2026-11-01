@@ -1,4 +1,5 @@
 import './hud.css';
+import { iconoMejora } from './iconos.ts';
 
 // HUD de Meta Space, rehecho para el mapa nuevo. Sustituye a la parte del HUD
 // de ui.ts del juego con las mismas funciones (showHud, hideHud, setMision,
@@ -37,13 +38,13 @@ export function compact(n: number) {
   return Math.round(n).toLocaleString('es-ES');
 }
 
-// Las herramientas (los mismos nombres, colores e iconos que WEAPONS y ui.ts).
+// Las herramientas (los mismos nombres y colores que WEAPONS; los iconos, de iconos.ts).
 export type Herramienta = 'cortador' | 'pulso' | 'dron' | 'interferencia';
 const HERRAMIENTAS: Record<Herramienta, { nombre: string; color: string; icono: string }> = {
-  cortador: { nombre: 'Cortador', color: '#ffb347', icono: `<svg viewBox="0 0 24 24"><path d="M4 20 L14 10" stroke="#fff3" stroke-width="5" stroke-linecap="round"/><path d="M4 20 L14 10" stroke="#ffb347" stroke-width="3" stroke-linecap="round"/><circle cx="17" cy="7" r="4" fill="#ffe2a8"/></svg>` },
-  pulso: { nombre: 'Pulso', color: '#5ee0ff', icono: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="#5ee0ff" stroke-width="2.5"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="#b8f4ff" stroke-width="2"/><circle cx="12" cy="12" r="1.8" fill="#fff"/></svg>` },
-  dron: { nombre: 'Dron', color: '#c9f27a', icono: `<svg viewBox="0 0 24 24"><rect x="8" y="10" width="8" height="5" rx="1" fill="#d8d2c4"/><ellipse cx="12" cy="8" rx="8" ry="2" fill="none" stroke="#c9f27a" stroke-width="2"/><circle cx="12" cy="12.5" r="1.4" fill="#c9f27a"/></svg>` },
-  interferencia: { nombre: 'Interferencia', color: '#d07bff', icono: `<svg viewBox="0 0 24 24"><path d="M3 12 q3-6 6 0 t6 0 t6 0" fill="none" stroke="#d07bff" stroke-width="2.5"/><path d="M3 17 q3-4 6 0 t6 0 t6 0" fill="none" stroke="#d07bff88" stroke-width="2"/></svg>` },
+  cortador: { nombre: 'Cortador', color: '#ffb347', icono: iconoMejora('cortador') },
+  pulso: { nombre: 'Pulso', color: '#5ee0ff', icono: iconoMejora('pulso') },
+  dron: { nombre: 'Dron', color: '#c9f27a', icono: iconoMejora('dron') },
+  interferencia: { nombre: 'Interferencia', color: '#d07bff', icono: iconoMejora('interferencia') },
 };
 const NIVEL_MAX = 6;
 

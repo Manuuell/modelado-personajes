@@ -4,6 +4,8 @@ import type { Modelo } from '../modelos/kit.ts';
 import { World } from './mundo.ts';
 import { COLOCACION, NPCS } from '../contenido/mapa.ts';
 import { decir, drawMinimap, setMision, showHud, updateHud, type MinimapState } from './hud.ts';
+import { mostrarMejoras } from './mejoras.ts';
+import { MUESTRA } from './mejoras-muestra.ts';
 
 // Taller del mapa (solo desarrollo, /mapa.html): el mundo nuevo con el
 // astronauta, el contenido del mapa colocado y algo de horda, para pasearlo
@@ -13,6 +15,7 @@ import { decir, drawMinimap, setMision, showHud, updateHud, type MinimapState } 
 //   ?vista=jugador|salida|aerea|acido|vadeo|montana|ruinas|refugio|nave → encuadres fijos
 //   ?vista=carta                                        → la carta del minimapa
 //   &hud=0                                              → sin interfaz
+//   &mejoras                                            → con la subida de nivel encima
 //
 // Cuando ya se ha pintado unos fotogramas, el título pasa a «listo».
 
@@ -292,7 +295,10 @@ function paso() {
   }
   renderer.render(escena, camara);
   if (conHud) pintarHud(dt);
-  if (++fotogramas === 20) document.title = 'listo';
+  if (++fotogramas === 20) {
+    document.title = 'listo';
+    if (params.has('mejoras')) mostrarMejoras(8, MUESTRA, () => undefined);
+  }
   requestAnimationFrame(paso);
 }
 
