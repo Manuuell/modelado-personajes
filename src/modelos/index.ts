@@ -2,9 +2,12 @@ import { crearAstronauta } from './astronauta.ts';
 import { crearAvispa } from './avispa.ts';
 import { crearBaliza } from './baliza.ts';
 import { crearCaparazon } from './caparazon.ts';
+import { crearHeraldo } from './heraldo.ts';
+import { crearOjoHelios } from './ojo-helios.ts';
 import { crearRecolector } from './recolector.ts';
 import { crearSaltador } from './saltador.ts';
 import { crearSegador } from './segador.ts';
+import { crearSegadorJefe } from './segador-jefe.ts';
 import { crearSembrador } from './sembrador.ts';
 import type { Modelo } from './kit.ts';
 
@@ -24,4 +27,7 @@ export const CATALOGO: { id: string; nombre: string; tipo?: 'jugador' | 'horda' 
   { id: 'avispa', nombre: 'Avispa', tipo: 'horda', crear: crearAvispa },
   { id: 'caparazon', nombre: 'Caparazón', tipo: 'horda', crear: crearCaparazon },
   { id: 'sembrador', nombre: 'Sembrador', tipo: 'horda', crear: crearSembrador },
+  { id: 'segador-jefe', nombre: 'Segador, Jefe de Cosecha', tipo: 'jefe', crear: crearSegadorJefe },
+  { id: 'heraldo', nombre: 'Heraldo del Velo', tipo: 'jefe', crear: crearHeraldo },
+  { id: 'ojo-helios', nombre: 'Ojo de HELIOS', tipo: 'jefe', crear: crearOjoHelios },
 ];
