@@ -80,6 +80,9 @@ Además, un **Reposo** en bucle para el visor.
 
 ## Qué falta: enemigos
 
+> **Estado:** los cinco están modelados en `src/modelos/`; tamaños, clips y
+> cómo conectarlos al juego en [ESPEC.md](ESPEC.md).
+
 Los datos de juego están en `contexto-juego/data.ts` y
 `contexto-juego/enemies-nuevos.ts` (radio en metros y escala con la que el
 juego los dibuja; el modelo debe ocupar más o menos ese radio).
@@ -96,6 +99,9 @@ Las descripciones visuales de cada uno están en `prompts-modelos-3d.md`
 (prompt completo de cada personaje).
 
 ## Qué falta: jefes
+
+> **Estado:** los tres están modelados en `src/modelos/`; clips y tiempos de
+> cada ataque en [ESPEC.md](ESPEC.md).
 
 Los jefes salen de uno en uno, se dibujan a detalle 1 con su propio
 AnimationMixer y pueden ser grandes (3–6 m). Necesitan **intención legible**:
