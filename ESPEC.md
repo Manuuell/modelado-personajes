@@ -312,6 +312,109 @@ clips.
 | Pisotón | 0 s (f. 0): se encabrita con las patas delanteras en alto; anillo rojo de 0,15 a 0,96 s | 0,95 s (f. 29): pisa | 1,35 s (f. 41) | 2,4 s (72) | Onda en el suelo que crece de 1,5 a 6 m de radio entre 0,95 y 1,35 s. |
 | Invocar | 0 s (f. 0): mira al cielo, las antenas emiten anillos; círculos de 0,5 a 2,0 s | 1,8 s (f. 54): destellan, salen las Balizas | — | 2,8 s (84) | Tres Balizas a 6 m: (x, z) = (−5,2; 3), (0; 6) y (5,2; 3). |
 
+## Mapa: fichas
+
+Modelos para poblar el mapa. El diseño (qué hace cada uno en la partida, las
+recompensas y la conversación por voz) está en [MAPA.md](MAPA.md); los datos,
+en `src/contenido/mapa.ts`. Tipos nuevos en el catálogo, con su presupuesto a
+detalle 1: `npc` y `mapa` (≤ 20.000 triángulos, salen pocos) y `objeto`
+(≤ 6.000, las cajas pueden ser docenas).
+
+### NPC: Iris, Tali, Lis y Bruno (`npc-*.ts` sobre `gente.ts`)
+
+Cuerpo chibi común (`gente.ts`): cabeza grande con ojos de pupila oscura,
+cejas y una boca que se abre al hablar bajo una sonrisa en arco; brazos con
+codo y mano; ropa de abrigo de colores cálidos. Se construyen a detalle 0,75.
+Cada uno añade su herramienta (en `mano_d`), su puesto de trabajo (en
+`puesto`, colgado de la raíz) y su clip `Trabajar`.
+
+| NPC | Alto | Triángulos | Herramienta y puesto | `Trabajar` |
+|---|---|---|---|---|
+| `npc-mecanica` (Iris) | 2,5 m | 16.392 | llave inglesa; generador, bombilla y chispas | 1,60 s: golpea el generador dos veces (chispas en 0,47 y 1,07 s) |
+| `npc-vigia` (Tali) | 2,6 m | 14.232 | prismáticos; catalejo en trípode y banderín del sol | 3,20 s: barre el horizonte, baja los prismáticos y señala (1,9–2,6 s) |
+| `npc-botanica` (Lis) | 2,5 m | 18.486 | vial; planta bajo campana con lámpara y maletín | 3,00 s: se arrodilla, toma una muestra y la mira a contraluz |
+| `npc-chatarrero` (Bruno) | 2,65 m | 19.138 | engranaje y mochila de chatarra; carro y balanza | 2,40 s: saca una pieza, la pesa y la echa al montón |
+
+- **Nodos:** raíz → `giro` → `cuerpo` → `cadera` → `pecho` → `cabeza` (con
+  `ojo_i/d`, `pupila_i/d`, `ceja_i/d`, `boca`) y `hombro_i/d` → `codo_i/d` →
+  `mano_i/d`; `pierna_i/d`; `puesto` (en la raíz). **Ningún clip toca
+  `giro`**: el juego lo gira en y para que el NPC mire al jugador sin mover su
+  puesto (lo comprueba la prueba).
+
+| Clip | Duración | Fotogramas | Tipo | Qué hace |
+|---|---|---|---|---|
+| Reposo | 2,40 s | 72 | bucle | Respira, mira a los lados y parpadea. |
+| Trabajar | según el NPC | — | bucle | Su oficio (tabla de arriba). |
+| Saludar | 1,40 s | 42 | una vez | Saluda con la mano y sonríe: cuando el jugador llega a 6 m. |
+| Escuchar | 1,60 s | 48 | bucle | Mano a la barbilla, cabeza ladeada, asiente: mientras el jugador habla. |
+| Hablar | 1,20 s | 36 | bucle | Gesticula y mueve la boca a ritmo de sílabas: mientras suena su respuesta. |
+| Dar | 1,40 s | 42 | una vez | Tiende las manos: el objeto se ve de 0,35 a 0,95 s. |
+| Celebrar | 1,00 s | 30 | bucle | Salta con los brazos arriba: vuelve el sol o le ayudas. |
+| Asustarse | 0,80 s | 24 | bucle | Agachado, tapándose la cabeza: enemigos a menos de 10 m. |
+
+### Altares de jefe (`altar-jefe.ts`: `altar-cosecha`, `altar-heraldo`, `altar-ojo`)
+
+Monolito de HELIOS: plataforma de dos escalones con aro púrpura, cuatro
+pilares con cristales y luces rojas, pedestal con ojo rojo bajo visera en V y
+el emblema del jefe flotando (rueda de cuchillas, dirigible u ojo).
+
+- **Tamaño:** 4,4 m de ancho, 3 m hasta el emblema. **10.136–10.580
+  triángulos.**
+- **Nodos:** `altar`, `emblema`, `cristales` (púrpura), `cristales_sol`
+  (escondidos), `luces`, `haz` (22 m al cielo, escondido), `anillos`,
+  `recompensa` (sol dorado, escondido).
+
+| Clip | Duración | Fotogramas | Tipo | Qué hace |
+|---|---|---|---|---|
+| Reposo | 3,00 s | 90 | bucle | Dormido: el emblema gira despacio. |
+| Invocar | 3,00 s | 90 | una vez | Anillos, **haz al cielo en 1,2 s (f. 36)**, **el jefe aparece en 2,6 s (f. 78)**. |
+| Combate | 2,00 s | 60 | bucle | Mientras el jefe vive. |
+| Recompensa | 3,00 s | 90 | una vez | Se purifica; **la recompensa se puede recoger en 2,4 s (f. 72)**. |
+| Purificado | 2,40 s | 72 | bucle | Con la recompensa flotando. |
+| Agotado | 2,40 s | 72 | bucle | Ya recogida. |
+
+### Ara del Sol (`altar-desafio.ts`)
+
+Monumento de piedra cálida con un obelisco, un sol de cobre y ocho lámparas
+(`lampara_0`…`lampara_7`). **3,9 m de alto, 4,8 de ancho; 12.496
+triángulos.** El anillo de la zona (`zona`) mide 8 m de radio
+(`RADIO_DESAFIO`).
+
+| Clip | Duración | Fotogramas | Tipo | Qué hace |
+|---|---|---|---|---|
+| Reposo | 3,00 s | 90 | bucle | El sol gira despacio. |
+| Activar | 1,60 s | 48 | una vez | Se enciende y se abre la zona. |
+| Desafío | 2,00 s | 60 | bucle | Mientras dura; a la vez que `Progreso`. |
+| Progreso | 1,00 s | 30 | una vez | **En pausa con `time = progreso`**: la lámpara k se enciende en (k + 1) / 8. |
+| Superado | 2,40 s | 72 | una vez | Destellos y rayos; **premio en 0,8 s (f. 24)**. |
+| Fallado | 1,40 s | 42 | una vez | Las lámparas se apagan una a una. |
+
+### Cajas de premio (`caja-premio.ts`: `caja-suministros`, `caja-helios`, `caja-reliquia`)
+
+Tapa con bisagra detrás (nodo `tapa`), luz de aviso (`baliza`) y destello
+(`destello`). **1 m de ancho; 2.966–3.624 triángulos** (detalle 0,55). La de
+suministros lleva `paracaidas`; la de HELIOS, `cerradura` (ojo rojo) y
+`hackeo` (ojo cian de ADA).
+
+| Clip | Duración | Fotogramas | Tipo | Qué hace |
+|---|---|---|---|---|
+| Reposo | 2,00 s | 60 | bucle | La luz parpadea y la tapa «respira». |
+| Aparecer | 2,00 s | 60 | una vez | Suministros: cae en paracaídas desde 10 m y aterriza en 1,5 s. HELIOS: sale del suelo. Reliquia: se materializa. |
+| Abrir | 1,20 s | 36 | una vez | Tiembla y salta la tapa (0,45 s); **botín en 0,5 s (f. 15)**. |
+| Abierta | 2,00 s | 60 | bucle | Vacía. |
+
+### Torre del Velo (`torre-velo.ts`) y Refugio (`refugio.ts`)
+
+- **Torre del Velo:** 6,3 m hasta la boca (10 con el humo); 8.870
+  triángulos. Nodos `columna` (lo que cae), `ojo`, `aros`, `humo`,
+  `chispas`, `sol`. Clips: `Emitir` (3 s, bucle), `Golpe recibido` (0,45 s),
+  `Colapso` (3 s: cae de 0,8 a 1,6 s, **sol en 2,2 s**), `Apagada` (2 s,
+  bucle).
+- **Refugio:** 5 m de ancho y 5 m hasta la antena; 9.582 triángulos. Nodos
+  `puerta`, `luz`, `alarma` / `faro`, `fuego`, `bandera`. Clips: `Reposo`
+  (3 s, bucle), `Abrir` (1,4 s), `Alarma` (1 s, bucle: cierra la escotilla y
+  gira la luz roja).
+
 ## Cambios en el kit, el taller y las pruebas
 
 - `kit.ts` (solo añade, no cambia nada de lo que ya había):

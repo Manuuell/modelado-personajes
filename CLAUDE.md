@@ -15,6 +15,9 @@ personajes que faltan.
   (los tests cargan los módulos directamente en Node).
 - Si cambias `kit.ts` o `tropa.ts`, que siga funcionando todo lo anterior: el
   juego usa los mismos archivos.
+- Los NPC se montan sobre `gente.ts` (un archivo por NPC). Lo que hace cada
+  cosa en la partida va en `src/contenido/mapa.ts`: solo datos y funciones
+  puras, sin importar nada (lo carga también el servidor de voz).
 - **Commits y PR sin líneas `Co-Authored-By`, sin "Generated with" ni ninguna
   marca de IA.** Mensajes normales, en inglés o en español, describiendo el
   cambio.

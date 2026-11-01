@@ -128,6 +128,12 @@ Para cada jefe, anota en `ESPEC.md` los **tiempos de cada ataque** (cuándo
 empieza el aviso, en qué fotograma golpea, cuánto dura), para que el juego
 pueda sincronizar el daño con la animación.
 
+## Contenido del mapa
+
+Altares de jefe y de desafío, cajas de premio, estructuras y los NPC de los
+refugios con los que se habla por voz: diseño en [MAPA.md](MAPA.md), datos en
+`src/contenido/mapa.ts`, modelos en `src/modelos/`.
+
 ## Hecho significa
 
 - Cada personaje en su archivo `src/modelos/<id>.ts`, registrado en

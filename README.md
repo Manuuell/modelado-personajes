@@ -8,6 +8,8 @@ Roblox. Cada modelo se exporta a GLB y se copia al juego tal cual.
 
 ![Jefes](referencias/jefes-conjunto.png)
 
+![Mapa](referencias/mapa-conjunto.png)
+
 ```bash
 npm install
 npm run dev     # taller: cada personaje con sus animaciones, en http://127.0.0.1:5174
@@ -16,5 +18,6 @@ npm run check   # tipos y pruebas de los modelos
 
 - [CONTEXTO.md](CONTEXTO.md): la historia, el estilo, el contrato con el juego y lo que falta.
 - [ESPEC.md](ESPEC.md): tamaño, nodos y clips de cada personaje, y los tiempos de ataque de los jefes.
+- [MAPA.md](MAPA.md): altares de jefe y de desafío, cajas de premio, estructuras y la gente de Meta con la que se habla por voz.
 - [prompts-modelos-3d.md](prompts-modelos-3d.md): prompts para generar los personajes con otras IA.
 - [referencias/](referencias/): hojas de giro, vistas sueltas, tiras de ataques y GLB de los modelos.
