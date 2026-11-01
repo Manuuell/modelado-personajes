@@ -7,8 +7,8 @@ import { Tropa } from '../src/modelos/tropa.ts';
 
 // Lo que el juego necesita de cada modelo, comprobado sin navegador ni GPU.
 
-/** Triángulos máximos en el juego (horda a detalle 0,45; jefes a detalle 1). */
-const PRESUPUESTO = { horda: 6500, jefe: 30000, jugador: 30000 };
+/** Triángulos máximos en el juego (horda a detalle 0,45; el resto a detalle 1). */
+const PRESUPUESTO = { horda: 6500, jefe: 30000, jugador: 30000, escena: 30000 };
 
 for (const entrada of CATALOGO) {
   test(`${entrada.id}: nodos con nombre único y animaciones que apuntan a ellos`, () => {

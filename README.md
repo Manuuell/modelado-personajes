@@ -15,3 +15,15 @@ npm run check   # tipos y pruebas de los modelos
 - [CONTEXTO.md](CONTEXTO.md): la historia, el estilo, el contrato con el juego y lo que falta.
 - [prompts-modelos-3d.md](prompts-modelos-3d.md): prompts para generar los personajes con otras IA.
 - [referencias/](referencias/): hojas de giro, vistas sueltas y GLB de los modelos actuales.
+- [ESPEC.md](ESPEC.md): tamaño, nodos y clips de cada modelo, y los tiempos de la cinemática.
+
+## Cinemática de entrada
+
+`src/intro.ts` es la intro del juego: la nave de ARES-IX (`src/modelos/nave.ts`)
+entra en plano, cruza el cielo soltando las letras de META SPACE, que saltan a
+su sitio y flotan, y despega al pulsar. Con `npm run dev`, se ve en
+http://127.0.0.1:5174/intro.html (`?t=4.2` la congela en ese segundo).
+
+Mantiene la firma `showIntro(root, onDone, opts)` de la del juego: para
+llevarla, copia `src/intro.ts` a `web/src/intro.ts` y `src/modelos/nave.ts` a
+`web/src/modelos/nave.ts`. No hace falta tocar nada más (`kit.ts` es el mismo).

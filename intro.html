@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cinemática de entrada · Meta Space</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      html, body { margin: 0; height: 100%; background: #10151f; color: #e9eaf2; font: 500 15px Rubik, system-ui, sans-serif; }
+      #fin { display: none; height: 100%; place-items: center; text-align: center; }
+      #fin button { margin-top: 12px; padding: 10px 18px; border: 0; border-radius: 10px; background: #ff8a3d; color: #1a1208; font: 700 15px Rubik, sans-serif; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <div id="fin"><div>Aquí se abre el menú del juego.<br /><button type="button">Repetir la cinemática</button></div></div>
+    <script type="module">
+      // Vista previa de src/intro.ts (solo desarrollo, /intro.html).
+      //   ?t=4.2            → congelada en ese segundo (capturas)
+      //   ?t=6.5&salida=0.3 → congelada 0,3 s después de pulsar para despegar
+      //   ?cuadros          → no arranca; window.introFijar(t, salida) pinta ese instante (vídeos)
+      import { showIntro } from '/src/intro.ts';
+
+      const params = new URLSearchParams(location.search);
+      if (params.has('cuadros')) {
+        let cerrar = null;
+        window.introFijar = (t, salida) => new Promise((listo) => {
+          cerrar?.();
+          cerrar = showIntro(document.body, () => {}, { fijo: t, fijoSalida: salida });
+          requestAnimationFrame(() => requestAnimationFrame(() => listo()));
+        });
+      }
+      const fijo = params.has('t') ? Number(params.get('t')) : undefined;
+      const fijoSalida = params.has('salida') ? Number(params.get('salida')) : undefined;
+      const fin = document.getElementById('fin');
+      const empezar = () => {
+        fin.style.display = 'none';
+        showIntro(document.body, () => { fin.style.display = 'grid'; }, { fijo, fijoSalida });
+      };
+      fin.querySelector('button').addEventListener('click', empezar);
+      if (!params.has('cuadros')) empezar();
+    </script>
+  </body>
+</html>
