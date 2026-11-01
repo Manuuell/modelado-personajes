@@ -8,7 +8,12 @@ import { CATALOGO, type Modelo } from './index.ts';
 //
 //   ?modelo=recolector&vista=frente|tres-cuartos|lado|espalda
 //   ?modelo=recolector&vista=hoja        → frente, lado, espalda y 3/4 en una fila
-//   ?vista=grupo                         → los tres juntos (referencia de estilo)
+//   ?vista=grupo                         → todos juntos, a la misma escala
+//   ?vista=grupo&modelos=a,b,c&celda=400 → solo esos, en ese orden y ancho de celda
+//   ?modelo=segador&vista=tira&clip=Embestir&n=6&az=35
+//                                        → n fotogramas del clip en una fila
+//   …&vista=tira&clip=Disparar&tiempos=0,0.1,3.5,3.9 → esos instantes
+//   &clip=Embestir&t=0.9                 → cualquier vista, posada en ese instante
 //   ?glb=recolector                      → GLB en base64 dentro de <pre id="glb">
 //
 // Al terminar, el título de la página pasa a «listo».
@@ -34,8 +39,23 @@ function posar(modelo: Modelo) {
 function crear(id: string): Modelo {
   const m = CATALOGO.find((c) => c.id === id)!.crear();
   posar(m);
+  const clip = params.get('clip');
+  if (clip && params.get('modelo') === id) enInstante(m, clip, Number(params.get('t') ?? 0));
   m.raiz.updateMatrixWorld(true);
   return m;
+}
+
+/** Deja el modelo en la pose del clip en el segundo `t`. */
+function enInstante(m: Modelo, clip: string, t: number) {
+  const anim = m.animaciones.find((a) => a.clip.name === clip);
+  if (!anim) throw new Error(`${m.id} no tiene el clip «${clip}»`);
+  const mezclador = new THREE.AnimationMixer(m.raiz);
+  const accion = mezclador.clipAction(anim.clip);
+  accion.setLoop(THREE.LoopOnce, 1);
+  accion.clampWhenFinished = true;
+  accion.play();
+  mezclador.setTime(Math.min(t, anim.clip.duration - 1e-4));
+  m.raiz.updateMatrixWorld(true);
 }
 
 const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true, preserveDrawingBuffer: true });
@@ -46,6 +66,23 @@ escena.background = new THREE.Color('#e4e7ef');
 escena.add(new THREE.HemisphereLight('#ffffff', '#8a8fa3', 1.7));
 const luz = new THREE.DirectionalLight('#ffffff', 2.2);
 escena.add(luz, luz.target);
+
+/**
+ * Caja de lo que se ve: sin las piezas escondidas a escala casi 0 (avisos de
+ * ataque, chispas, la carga del Caparazón…), que si no estiran el encuadre.
+ */
+function cajaVisible(raiz: THREE.Object3D): THREE.Box3 {
+  raiz.updateMatrixWorld(true);
+  const caja = new THREE.Box3();
+  const escala = new THREE.Vector3();
+  raiz.traverse((o) => {
+    if (!(o instanceof THREE.Mesh) || o.userData.contorno || !o.visible) return;
+    escala.setFromMatrixScale(o.matrixWorld);
+    if (Math.min(escala.x, escala.y, escala.z) < 0.01) return;
+    caja.union(new THREE.Box3().setFromObject(o));
+  });
+  return caja;
+}
 
 /** Cámara ortográfica que encuadra la caja `caja` desde el ángulo dado. */
 function camaraPara(caja: THREE.Box3, az: number, el: number, aspecto: number): THREE.OrthographicCamera {
@@ -96,11 +133,12 @@ async function principal() {
   if (glb) {
     await exportarGlb(glb);
   } else if (params.get('vista') === 'grupo') {
-    const modelos = CATALOGO.map((c) => crear(c.id));
-    const ancho = 520, alto = 760;
+    const ids = params.get('modelos')?.split(',') ?? CATALOGO.map((c) => c.id);
+    const modelos = ids.map((id) => crear(id));
+    const ancho = Number(params.get('celda') ?? 520), alto = 760;
     for (const m of modelos) escena.add(m.raiz);
-    const cajas = modelos.map((m) => new THREE.Box3().setFromObject(m.raiz));
-    // Misma escala para los tres: se ve el tamaño real de cada uno.
+    const cajas = modelos.map((m) => cajaVisible(m.raiz));
+    // Misma escala para todos: se ve el tamaño real de cada uno.
     const altoMax = Math.max(...cajas.map((c) => c.max.y - c.min.y));
     renderer.setSize(ancho * modelos.length, alto, false);
     lienzo.style.width = `${ancho * modelos.length}px`;
@@ -114,10 +152,38 @@ async function principal() {
       renderer.render(escena, camaraPara(caja, 30, 10, ancho / alto));
     });
     etiquetar(modelos.map((m) => m.nombre.toUpperCase()));
+  } else if (params.get('vista') === 'tira') {
+    // Fotogramas de un clip en fila, todos con el mismo encuadre: se ve
+    // cuánto se mueve el modelo de un fotograma a otro.
+    const id = params.get('modelo') ?? 'astronauta';
+    const clip = params.get('clip') ?? '';
+    const n = Number(params.get('n') ?? 6);
+    const az = Number(params.get('az') ?? 35);
+    const dur = CATALOGO.find((c) => c.id === id)!.crear().animaciones.find((a) => a.clip.name === clip)!.clip.duration;
+    const tiempos = params.get('tiempos')?.split(',').map(Number) ?? Array.from({ length: n }, (_, i) => (dur * i) / (n - 1));
+    const modelos = tiempos.map((t) => {
+      const m = CATALOGO.find((c) => c.id === id)!.crear();
+      enInstante(m, clip, t);
+      return m;
+    });
+    const caja = new THREE.Box3();
+    for (const m of modelos) caja.union(cajaVisible(m.raiz));
+    const celda = Number(params.get('celda') ?? 360), alto = Number(params.get('alto') ?? 520);
+    renderer.setSize(celda * tiempos.length, alto, false);
+    lienzo.style.width = `${celda * tiempos.length}px`;
+    lienzo.style.height = `${alto}px`;
+    for (const m of modelos) escena.add(m.raiz);
+    modelos.forEach((m, i) => {
+      for (const o of modelos) o.raiz.visible = o === m;
+      renderer.setViewport(i * celda, 0, celda, alto);
+      renderer.setScissor(i * celda, 0, celda, alto);
+      renderer.render(escena, camaraPara(caja, az, 12, celda / alto));
+    });
+    etiquetar(tiempos.map((t) => `${clip.toUpperCase()} ${t.toFixed(2).replace('.', ',')} s`));
   } else {
     const m = crear(params.get('modelo') ?? 'astronauta');
     escena.add(m.raiz);
-    const caja = new THREE.Box3().setFromObject(m.raiz);
+    const caja = cajaVisible(m.raiz);
     const vista = params.get('vista') ?? 'frente';
     if (vista === 'hoja') {
       const orden = ['frente', 'lado', 'espalda', 'tres-cuartos'];

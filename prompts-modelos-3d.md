@@ -25,8 +25,9 @@ Todo está en la carpeta [referencias/](referencias/):
 | `<modelo>-hoja.png` | Frente, lado, espalda y 3/4 en una fila | La mejor referencia para una IA que modela: forma y colores desde todos los lados |
 | `<modelo>-frente.png`, `-lado.png`, `-espalda.png` | Vistas sueltas de 1024 × 1024 | Generadores de imagen a 3D con modo multivista (Meshy, Tripo) |
 | `<modelo>-tres-cuartos.png` | Vista 3/4 de 1024 × 1024 | Generadores de imagen a 3D con una sola imagen: es la que más información da |
-| `estilo-conjunto.png` | Los tres personajes juntos, a la misma escala | Referencia de estilo y de tamaño para los enemigos que aún no existen |
-| `astronauta.glb`, `recolector.glb`, `baliza.glb` | Los modelos actuales con todas sus animaciones | Si la IA acepta un modelo de partida para mejorarlo, o para usarlos tal cual |
+| `estilo-conjunto.png` | El astronauta y toda la horda juntos, a la misma escala | Referencia de estilo y de tamaño |
+| `jefes-conjunto.png` | El astronauta, el Recolector y los tres jefes, a la misma escala | Tamaño de los jefes frente al jugador |
+| `<modelo>.glb` | Cada modelo con todas sus animaciones | Si la IA acepta un modelo de partida para mejorarlo, o para usarlos tal cual |
 
 El astronauta está en pose A (brazos a 40°), que es lo que esperan los rigs
 automáticos.
@@ -177,7 +178,7 @@ Sinister flying drone enemy, dark metal sphere body with glowing purple band and
 
 ## 4. Segador (jefe, lleva las reliquias)
 
-**Adjunta:** `estilo-conjunto.png`, `recolector-hoja.png` y `baliza-hoja.png` como referencia de estilo (aún no tiene modelo propio).
+**Adjunta:** `segador-jefe-hoja.png` (jefe) o `segador-hoja.png` (horda) y `estilo-conjunto.png` (ya tiene modelo en código: ver `src/modelos/` y `ESPEC.md`).
 
 **Prompt completo**
 
@@ -207,7 +208,7 @@ Giant evil harvester machine boss, dark metal boxy body, two furious red headlig
 
 ## 5. Saltador
 
-**Adjunta:** `estilo-conjunto.png`, `recolector-hoja.png` y `baliza-hoja.png` como referencia de estilo (aún no tiene modelo propio).
+**Adjunta:** `saltador-hoja.png` y `estilo-conjunto.png` (ya tiene modelo en código: ver `src/modelos/` y `ESPEC.md`).
 
 **Prompt completo**
 
@@ -233,7 +234,7 @@ Evil mechanical grasshopper robot enemy, coiled spring body, long dark metal jum
 
 ## 6. Avispa
 
-**Adjunta:** `estilo-conjunto.png`, `recolector-hoja.png` y `baliza-hoja.png` como referencia de estilo (aún no tiene modelo propio).
+**Adjunta:** `avispa-hoja.png` y `estilo-conjunto.png` (ya tiene modelo en código: ver `src/modelos/` y `ESPEC.md`).
 
 **Prompt completo**
 
@@ -258,7 +259,7 @@ Evil robotic wasp drone enemy, segmented dark metal body with glowing purple str
 
 ## 7. Caparazón
 
-**Adjunta:** `estilo-conjunto.png`, `recolector-hoja.png` y `baliza-hoja.png` como referencia de estilo (aún no tiene modelo propio).
+**Adjunta:** `caparazon-hoja.png` y `estilo-conjunto.png` (ya tiene modelo en código: ver `src/modelos/` y `ESPEC.md`).
 
 **Prompt completo**
 
@@ -285,7 +286,7 @@ Evil armored beetle tank robot enemy, huge dark metal plated shell with glowing 
 
 ## 8. Sembrador
 
-**Adjunta:** `estilo-conjunto.png`, `recolector-hoja.png` y `baliza-hoja.png` como referencia de estilo (aún no tiene modelo propio).
+**Adjunta:** `sembrador-hoja.png` y `estilo-conjunto.png` (ya tiene modelo en código: ver `src/modelos/` y `ESPEC.md`).
 
 **Prompt completo**
 
