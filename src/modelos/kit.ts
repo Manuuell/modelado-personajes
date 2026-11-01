@@ -324,6 +324,30 @@ export function curva(t: number, claves: readonly (readonly [number, number])[])
   return claves[claves.length - 1][1];
 }
 
+/**
+ * El mismo modelo a otra escala sin engordar el contorno: agranda la
+ * geometría, las posiciones de los nodos y las pistas `mov`, en vez de
+ * escalar la raíz (que haría la línea `k` veces más gruesa que la del resto).
+ * Para piezas hechas a medida de personaje que en el mapa van mucho mayores.
+ */
+export function agrandar(modelo: Modelo, k: number): Modelo {
+  const hechas = new Set<THREE.BufferGeometry>();
+  modelo.raiz.traverse((o) => {
+    if (o !== modelo.raiz) o.position.multiplyScalar(k);
+    if (o instanceof THREE.Mesh && !hechas.has(o.geometry)) {
+      hechas.add(o.geometry);
+      o.geometry.scale(k, k, k);
+    }
+  });
+  for (const a of modelo.animaciones) {
+    for (const pista of a.clip.tracks) {
+      if (!pista.name.endsWith('.position')) continue;
+      for (let i = 0; i < pista.values.length; i++) pista.values[i] *= k;
+    }
+  }
+  return modelo;
+}
+
 /** Pose entera de un instante: cómo rota, se mueve y se escala cada nodo. */
 export interface Pose {
   rot?: Record<string, readonly [number, number, number]>;

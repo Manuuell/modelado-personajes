@@ -3,6 +3,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import {
   PALETA, barril, brillo, caja, capsula, conDetalle, contorno, esfera, pieza, punta, toon, toro,
 } from '../modelos/kit.ts';
+import { crearNavePosada, ESCALA_POSADA } from '../modelos/nave.ts';
 
 // El mundo de Meta Space: el sector donde se juega cada partida.
 //
@@ -32,6 +33,14 @@ const CENIT = new THREE.Color('#3a1530');
 
 /** Altura de la superficie del ácido. */
 export const NIVEL_ACIDO = -1.6;
+/**
+ * La nave de ARES-IX, posada a la izquierda de la salida (13 m): se ve al
+ * empezar, delante y a la izquierda, con la rampa mirando al jugador.
+ */
+export const NAVE = { x: -9, z: -10 };
+/** Giro de la nave para que su costado izquierdo (la escotilla) mire a la salida. */
+const GIRO_NAVE = Math.atan2(NAVE.z, -NAVE.x);
+
 /** Cuánto se hunde quien anda por el ácido. */
 const VADEO = 0.7;
 
@@ -150,6 +159,8 @@ export class World {
   readonly blocks: Block[] = [];
   readonly sun: THREE.DirectionalLight;
   readonly padPosition: THREE.Vector3;
+  /** Dónde está la nave posada y hacia dónde mira (para el minimapa). */
+  readonly nave = { x: NAVE.x, z: NAVE.z, giro: GIRO_NAVE };
   readonly arena: number;
   /** Para el minimapa y para colocar contenido: dónde está cada cosa. */
   readonly lugares: { tipo: 'montaña' | 'lago' | 'barrio'; nombre: string; x: number; z: number; r: number }[] = [];
@@ -170,6 +181,7 @@ export class World {
   private coloresSuelo: Float32Array | null = null;
   private ladoSuelo = 0;
   private cartaHecha: { imagen: HTMLCanvasElement; mitad: number } | null = null;
+  private mezcladorNave: THREE.AnimationMixer | null = null;
 
   constructor(readonly scene: THREE.Scene, opciones: OpcionesMundo = {}) {
     this.arena = opciones.arena ?? 130;
@@ -204,11 +216,15 @@ export class World {
     this.sky = this.cielo();
     this.terreno();
     this.mares(semilla);
+    // El sitio de la nave se reserva antes que ruinas y decorado, para que no
+    // salgan rocas ni árboles debajo.
+    this.reservarNave();
     this.montanas(semilla + 1);
     this.ruinas(semilla + 2);
     this.decorado(semilla + 3);
     this.horizonte(semilla + 4);
     this.cohete();
+    this.navePosada();
     this.bordes();
   }
 
@@ -262,7 +278,8 @@ export class World {
     // Llano donde se empieza y donde está el cohete.
     const salida = smoothstep(18, 8, Math.hypot(x, z));
     const plataforma = smoothstep(26, 15, Math.hypot(x - this.padPosition.x, z - this.padPosition.z));
-    h += (0 - h) * Math.max(salida, plataforma);
+    const nave = smoothstep(12, 7, Math.hypot(x - NAVE.x, z - NAVE.z));
+    h += (0 - h) * Math.max(salida, plataforma, nave);
     return h;
   }
 
@@ -312,7 +329,7 @@ export class World {
     const arena = new THREE.Color('#dba57c'), duna = new THREE.Color('#f0c69c'), valle = new THREE.Color('#b67e68');
     const roca = new THREE.Color('#5c3e60'), rocaAlta = new THREE.Color('#3e2c50'), escarcha = new THREE.Color('#ece6f2');
     const helada = new THREE.Color('#cdbfd6'), grava = new THREE.Color('#7e6070');
-    const manchado = new THREE.Color('#5c2e66'), losa = new THREE.Color('#9a8274');
+    const manchado = new THREE.Color('#5c2e66'), losa = new THREE.Color('#9a8274'), quemado = new THREE.Color('#4a3040');
     const c = new THREE.Color();
     const a = this.arena;
     const lado = segmentos + 1, paso = (this.half * 2) / segmentos;
@@ -344,6 +361,9 @@ export class World {
       // no se lee como un techo claro.
       const fuera = smoothstep(a + 4, a + 30, Math.pow(Math.pow(Math.abs(x), 4) + Math.pow(Math.abs(z), 4), 0.25));
       c.lerp(rocaAlta, fuera * 0.9);
+      // Quemadura del aterrizaje bajo la nave, con rayas que salen del centro.
+      const dNave = Math.hypot(x - NAVE.x, z - NAVE.z);
+      if (dNave < 8) c.lerp(quemado, smoothstep(7.5, 2.5, dNave) * (0.35 + 0.3 * noise(Math.atan2(z - NAVE.z, x - NAVE.x) * 4, dNave * 0.3)));
       // Escarcha solo en las cumbres (y menos donde es muy empinado).
       c.lerp(escarcha, smoothstep(30, 38, y + (fbm(x * 0.2, z * 0.2) - 0.5) * 8) * (1 - smoothstep(1.6, 2.6, p) * 0.6) * (1 - fuera * 0.8));
       colores.set([c.r, c.g, c.b], i * 3);
@@ -812,6 +832,37 @@ export class World {
     this.addBlock({ minX: p.x + 5.5, maxX: p.x + 10.5, minZ: p.z - 2.5, maxZ: p.z + 2.5 });
   }
 
+  // ------------------------------------------------------------ nave
+
+  /** Un punto a `largo` m por delante del morro y `lado` m a su izquierda. */
+  private enNave(largo: number, lado: number) {
+    const g = GIRO_NAVE;
+    return { x: NAVE.x + Math.sin(g) * largo + Math.cos(g) * lado, z: NAVE.z + Math.cos(g) * largo - Math.sin(g) * lado };
+  }
+
+  /** Choques de la nave: tres círculos a lo largo del casco y las zapatas de atrás. */
+  private reservarNave() {
+    const k = ESCALA_POSADA;
+    for (const largo of [-3.2, 0, 3.2]) this.addCirculo({ ...this.enNave(largo, 0), r: 2.4 });
+    for (const lado of [-0.86, 0.86]) this.addCirculo({ ...this.enNave(-0.78 * k, lado * k), r: 0.6 });
+  }
+
+  /**
+   * La nave de ARES-IX posada: no se fusiona con lo estático porque está
+   * animada (luces, antena y ojos, clip «Posada»).
+   */
+  private navePosada() {
+    const m = crearNavePosada();
+    m.raiz.position.set(NAVE.x, this.heightAt(NAVE.x, NAVE.z), NAVE.z);
+    m.raiz.rotation.y = GIRO_NAVE;
+    m.raiz.traverse((o) => {
+      if (o instanceof THREE.Mesh && !o.userData.contorno) o.castShadow = o.receiveShadow = true;
+    });
+    this.scene.add(m.raiz);
+    this.mezcladorNave = new THREE.AnimationMixer(m.raiz);
+    this.mezcladorNave.clipAction(m.animaciones.find((a) => a.clip.name === 'Posada')!.clip).play();
+  }
+
   /** Tope en el borde, detrás de la muralla de picos, por si alguien la escala. */
   private bordes() {
     const a = this.arena;
@@ -838,6 +889,7 @@ export class World {
   /** Anima el ácido, las burbujas y el vapor. Llamar una vez por fotograma. */
   update(dt: number) {
     this.tiempo += dt;
+    this.mezcladorNave?.update(dt);
     if (this.acido) this.acido.uniforms.tiempo.value = this.tiempo;
     const b = this.burbujas;
     if (b) {

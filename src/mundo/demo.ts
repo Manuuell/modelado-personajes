@@ -10,7 +10,7 @@ import { decir, drawMinimap, setMision, showHud, updateHud, type MinimapState } 
 // y sacar capturas.
 //
 //   WASD o flechas: andar · arrastrar: girar · rueda: acercar
-//   ?vista=jugador|aerea|acido|vadeo|montana|ruinas|refugio → encuadres fijos
+//   ?vista=jugador|salida|aerea|acido|vadeo|montana|ruinas|refugio|nave → encuadres fijos
 //   ?vista=carta                                        → la carta del minimapa
 //   &hud=0                                              → sin interfaz
 //
@@ -167,6 +167,15 @@ if (vista === 'acido') {
   pos.set(l.x - 6, 0, l.z + 16);
   yaw = Math.atan2(l.x - pos.x, l.z - pos.z) + Math.PI;
   pitch = 0.25;
+} else if (vista === 'salida') {
+  // Como empieza la partida en el juego: en el centro, mirando al norte (al cohete).
+  yaw = 0;
+} else if (vista === 'nave') {
+  // Al pie de la rampa, con la nave en 3/4.
+  pos.set(mundo.nave.x + 7, 0, mundo.nave.z + 3.5);
+  yaw = Math.atan2(mundo.nave.x - 1.5 - pos.x, mundo.nave.z - pos.z) + Math.PI;
+  pitch = 0.2;
+  distancia = 13;
 }
 const fuera = mundo.resolve(pos.x, pos.z, 0.6, { x: 0, z: 0 });
 pos.set(fuera.x, 0, fuera.z);
@@ -194,6 +203,7 @@ function zonaDe(x: number, z: number) {
     if (d < 1 && d < dmin) { dmin = d; mejor = l.tipo === 'lago' && !enAcido ? `Orilla del ${l.nombre}` : l.nombre; }
   }
   if (mejor) return mejor;
+  if (Math.hypot(x - mundo.nave.x, z - mundo.nave.z) < 10) return 'Nave de ARES-IX';
   return Math.hypot(x, z) > mundo.arena ? 'Tierras altas' : 'Llanura de Meta';
 }
 if (conHud) {
@@ -313,6 +323,7 @@ function pintarHud(dt: number) {
     px: pos.x, pz: pos.z, yaw, enemies: enemigos,
     relics: reliquia ? [{ x: reliquia.x + 3, z: reliquia.z }] : [],
     pad: { x: mundo.padPosition.x, z: mundo.padPosition.z },
+    nave: mundo.nave,
     lugares: lugaresMapa,
     carta,
     marca: vista === 'refugio' ? { x: mundo.padPosition.x * 0.6, z: mundo.padPosition.z * 0.6 } : null,

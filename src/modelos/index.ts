@@ -6,7 +6,7 @@ import { crearBaliza } from './baliza.ts';
 import { crearCaja } from './caja-premio.ts';
 import { crearCaparazon } from './caparazon.ts';
 import { crearHeraldo } from './heraldo.ts';
-import { crearNave } from './nave.ts';
+import { crearNave, crearNavePosada } from './nave.ts';
 import { crearNpcBotanica } from './npc-botanica.ts';
 import { crearNpcChatarrero } from './npc-chatarrero.ts';
 import { crearNpcMecanica } from './npc-mecanica.ts';
@@ -58,4 +58,5 @@ export const CATALOGO: { id: string; nombre: string; tipo?: Tipo; crear: () => M
   { id: 'torre-velo', nombre: 'Torre del Velo', tipo: 'mapa', crear: crearTorreVelo },
   { id: 'refugio', nombre: 'Refugio', tipo: 'mapa', crear: crearRefugio },
   { id: 'nave', nombre: 'Nave de ARES-IX', tipo: 'escena', crear: crearNave },
+  { id: 'nave-posada', nombre: 'Nave de ARES-IX (posada)', tipo: 'mapa', crear: crearNavePosada },
 ];

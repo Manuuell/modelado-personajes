@@ -89,6 +89,8 @@ export interface MinimapState {
   enemies: { count: number; x: Float32Array; z: Float32Array; type: Uint8Array };
   relics: { x: number; z: number }[];
   pad: { x: number; z: number };
+  /** La nave de ARES-IX posada junto a la salida (World.nave): se queda en el borde si está lejos. */
+  nave?: { x: number; z: number; giro: number };
   /** Lo que hay en el mapa: lagos, montañas, barrios y el contenido. */
   lugares?: { tipo: 'lago' | 'montaña' | 'barrio' | 'altar' | 'ara' | 'caja' | 'torre' | 'refugio' | 'npc'; x: number; z: number; r?: number; hecho?: boolean }[];
   /** Lo que ha marcado la vigía: pulsa en el minimapa. */
@@ -361,6 +363,19 @@ export function drawMinimap(s: MinimapState) {
     const pulso = 10 + (performance.now() / 120) % 12;
     ctx.strokeStyle = '#5ee0ff'; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(mx, mz, pulso, 0, Math.PI * 2); ctx.stroke();
+  }
+  // La nave, vista desde arriba (casco blanco, alas y morro naranjas), también en el borde.
+  if (s.nave) {
+    const [nx, nz] = alBorde(...enMapa(s.nave.x, s.nave.z));
+    ctx.save(); ctx.translate(nx, nz); ctx.rotate(-s.nave.giro);
+    ctx.strokeStyle = '#16111f'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+    ctx.fillStyle = '#ff8a3d';
+    ctx.beginPath(); ctx.moveTo(-12, -4); ctx.lineTo(12, -4); ctx.lineTo(10, 3); ctx.lineTo(-10, 3); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#efe8de';
+    ctx.beginPath(); ctx.ellipse(0, 0, 5, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#1d2b4f';
+    ctx.beginPath(); ctx.ellipse(0, 9, 3.4, 2.6, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
   }
   // El cohete, pegado al borde si queda fuera.
   {

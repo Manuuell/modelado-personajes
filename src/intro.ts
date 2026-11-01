@@ -386,7 +386,9 @@ export function showIntro(root: HTMLElement, onDone: () => void, opts: IntroOpti
   pivote.add(nave.raiz);
   escena.add(pivote);
   const mezclador = new THREE.AnimationMixer(nave.raiz);
-  const clips = new Map(nave.animaciones.map((a) => {
+  // Solo los clips que usa la cinemática (los de posarse son para el mapa).
+  const USADOS = ['Turbo', 'Volar', 'Frenar', 'Flotar'];
+  const clips = new Map(nave.animaciones.filter((a) => USADOS.includes(a.clip.name)).map((a) => {
     const accion = mezclador.clipAction(a.clip);
     accion.play();
     return [a.clip.name, { accion, dur: a.clip.duration }] as const;
