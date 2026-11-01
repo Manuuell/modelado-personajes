@@ -25,7 +25,7 @@ const controles = new OrbitControls(camara, lienzo);
 controles.target.set(0, 1.1, 0);
 controles.enableDamping = true;
 controles.minDistance = 2;
-controles.maxDistance = 14;
+controles.maxDistance = 30;
 
 escena.add(new THREE.HemisphereLight('#e4ecff', '#4b4252', 1.4));
 const sol = new THREE.DirectionalLight('#fff3df', 2.6);
@@ -60,10 +60,32 @@ function cargar(id: string) {
   if (modelo) escena.remove(modelo.raiz);
   modelo = CATALOGO.find((c) => c.id === id)!.crear();
   escena.add(modelo.raiz);
+  encuadrar(modelo.raiz);
   mezclador = new THREE.AnimationMixer(modelo.raiz);
   for (const b of lista.querySelectorAll<HTMLButtonElement>('.modelo')) b.classList.toggle('activo', b.dataset.id === id);
   pintarPanel();
   reproducir(modelo.animaciones[0]);
+}
+
+/**
+ * Cámara a la medida del modelo: los jefes miden hasta 6 m y vuelan a 4,5,
+ * así que se apunta al centro de lo que se ve y se aleja en proporción. Los
+ * modelos pequeños se quedan con el encuadre de siempre.
+ */
+function encuadrar(raiz: THREE.Object3D) {
+  raiz.updateMatrixWorld(true);
+  const caja = new THREE.Box3();
+  const escala = new THREE.Vector3();
+  raiz.traverse((o) => {
+    if (!(o instanceof THREE.Mesh) || o.userData.contorno) return;
+    escala.setFromMatrixScale(o.matrixWorld);
+    if (Math.min(escala.x, escala.y, escala.z) >= 0.01) caja.union(new THREE.Box3().setFromObject(o));
+  });
+  const tam = caja.getSize(new THREE.Vector3());
+  const k = Math.max(1, Math.max(tam.x, tam.y, tam.z) / 2.9);
+  controles.target.set(0, Math.max(1.1, caja.getCenter(new THREE.Vector3()).y), 0);
+  camara.position.copy(controles.target).add(new THREE.Vector3(2.3, 1.3, 5.9).multiplyScalar(k));
+  controles.update();
 }
 
 function reproducir(a: Animacion) {

@@ -10,6 +10,13 @@ import { Tropa } from '../src/modelos/tropa.ts';
 /** Triángulos máximos en el juego (horda a detalle 0,45; jefes a detalle 1). */
 const PRESUPUESTO = { horda: 6500, jefe: 30000, jugador: 30000 };
 
+/**
+ * Derrotas que ya están en el juego y no acaban del todo en el suelo. La
+ * Baliza termina con la antena parabólica 0,44 m por debajo (el juego la encoge
+ * enseguida).
+ */
+const SUELO_CONOCIDO: Record<string, number> = { baliza: -0.5 };
+
 for (const entrada of CATALOGO) {
   test(`${entrada.id}: nodos con nombre único y animaciones que apuntan a ellos`, () => {
     const m = entrada.crear();
@@ -37,6 +44,47 @@ for (const entrada of CATALOGO) {
     const { triangulos } = medir(m.raiz);
     assert.ok(triangulos <= PRESUPUESTO[tipo], `${triangulos} triángulos (máximo ${PRESUPUESTO[tipo]} para ${tipo})`);
   });
+
+  test(`${entrada.id}: los clips en bucle cierran sin salto`, () => {
+    const m = entrada.crear();
+    for (const a of m.animaciones.filter((x) => x.bucle)) {
+      for (const pista of a.clip.tracks) {
+        const n = pista.getValueSize();
+        const primero = [...pista.values.slice(0, n)];
+        const ultimo = [...pista.values.slice(-n)];
+        // Un cuaternión y su opuesto son el mismo giro.
+        const iguales = (signo: number) => primero.every((v, i) => Math.abs(v - signo * ultimo[i]) < 1e-3);
+        assert.ok(iguales(1) || (n === 4 && iguales(-1)), `${a.clip.name}: ${pista.name} no acaba como empieza`);
+      }
+    }
+  });
+
+  if ((entrada.tipo ?? 'horda') === 'horda') {
+    test(`${entrada.id}: golpe corto y derrota que acaba en el suelo`, () => {
+      const m = entrada.crear();
+      const golpe = m.animaciones.find((a) => a.clip.name === 'Golpe recibido');
+      const derrota = m.animaciones.find((a) => a.clip.name === 'Derrota');
+      assert.ok(golpe && !golpe.bucle && golpe.clip.duration <= 0.4, 'falta «Golpe recibido» de una vez y ≤ 0,4 s');
+      assert.ok(derrota && !derrota.bucle && derrota.clip.duration <= 1.4, 'falta «Derrota» de una vez y ≤ 1,4 s');
+      const mezclador = new THREE.AnimationMixer(m.raiz);
+      const accion = mezclador.clipAction(derrota.clip);
+      accion.setLoop(THREE.LoopOnce, 1);
+      accion.clampWhenFinished = true;
+      accion.play();
+      mezclador.setTime(derrota.clip.duration);
+      m.raiz.updateMatrixWorld(true);
+      // Lo más bajo de lo que se ve (sin piezas escondidas a escala casi 0).
+      let suelo = Infinity;
+      const escala = new THREE.Vector3();
+      m.raiz.traverse((o) => {
+        if (!(o instanceof THREE.Mesh) || o.userData.contorno) return;
+        escala.setFromMatrixScale(o.matrixWorld);
+        if (Math.min(escala.x, escala.y, escala.z) < 0.01) return;
+        suelo = Math.min(suelo, new THREE.Box3().setFromObject(o, true).min.y);
+      });
+      assert.ok(suelo > (SUELO_CONOCIDO[entrada.id] ?? -0.15) && suelo < 0.2, `la derrota acaba con lo más bajo a ${suelo.toFixed(2)} m (debe tocar el suelo)`);
+    });
+  }
 
   test(`${entrada.id}: se hornea para la horda sin valores raros`, () => {
     const m = entrada.crear();

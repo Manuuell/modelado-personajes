@@ -39,7 +39,11 @@ $CH --headless=new --use-angle=swiftshader --enable-unsafe-swiftshader --hide-sc
 ```
 
 - `vista=frente|tres-cuartos|lado|espalda` con `--window-size=1024,1024`.
-- `vista=grupo` (`--window-size` = 520 × número de modelos, 760): todos juntos.
+- `vista=grupo` (`--window-size` = 520 × número de modelos, 760): todos juntos;
+  `&modelos=a,b,c&celda=440` elige cuáles y el ancho de cada uno.
+- `vista=tira&clip=<clip>&n=6` (o `&tiempos=0,0.5,1.2`) con `--window-size` =
+  360 × fotogramas, 520: los fotogramas de un clip en fila, para revisar una
+  animación. `&clip=<clip>&t=0.9` posa cualquier otra vista en ese instante.
 - `?glb=<id>` con `--dump-dom` deja el GLB en base64 dentro de `<pre id="glb">`.
 
 Si el entorno no tiene navegador, basta con `npm run check`.
