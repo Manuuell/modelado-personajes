@@ -138,17 +138,18 @@ se les pide nada concreto.
 
 ## Colocación sugerida
 
-En metros desde la salida del jugador, en el mapa de 180 × 180 m
-(`COLOCACION` en `mapa.ts`):
+En metros desde la salida del jugador, en el sector nuevo de 260 × 260 m
+([MUNDO.md](MUNDO.md); `COLOCACION` en `mapa.ts`). Cada sitio se busca con
+`World.lugarLibre`, que evita el ácido, las laderas y lo ya puesto:
 
 | Qué | Cuántos | Distancia | Separación mínima |
 |---|---|---|---|
-| Refugio | 1 | 12–18 m | — |
+| Refugio | 1 | 16–22 m | — |
 | NPC | 4 | a 4–9 m del refugio | — |
-| Altares de jefe | 3 | 45–70 m | 50 m |
-| Aras del Sol | 3 | 25–60 m | 30 m |
-| Torres del Velo | 4 | 35–80 m | 35 m |
-| Cofres de HELIOS | 6 | 20–85 m | 15 m |
+| Altares de jefe | 3 | 60–100 m | 60 m |
+| Aras del Sol | 3 | 30–80 m | 40 m |
+| Torres del Velo | 4 | 45–110 m | 45 m |
+| Cofres de HELIOS | 6 | 25–115 m | 20 m |
 
 ## Qué hay que hacer en el juego
 
@@ -157,8 +158,9 @@ Este repo solo modela y define el contenido. En el juego falta:
 1. Copiar los modelos nuevos (`gente.ts`, `npc-*.ts`, `altar-*.ts`,
    `caja-premio.ts`, `torre-velo.ts`, `refugio.ts`, y `kit.ts` actualizado) y
    `src/contenido/mapa.ts`.
-2. Colocarlos al empezar la partida (`COLOCACION`), cada uno con su
-   `AnimationMixer` (son pocos; las cajas pueden ir con `Tropa` si hay muchas).
+2. Colocarlos al empezar la partida (`COLOCACION` y `World.lugarLibre`),
+   cada uno con su `AnimationMixer` (son pocos; las cajas pueden ir con
+   `Tropa` si hay muchas).
 3. Hacer que los jefes salgan de su altar (`ALTARES_JEFE`) y aplicar los
    efectos (`Efecto`) con los sistemas que ya existen.
 4. Lógica de los desafíos (`DESAFIOS`): contar, cronometrar y mover

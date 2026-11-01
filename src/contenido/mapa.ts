@@ -482,14 +482,16 @@ export function contextoVoz(npc: NpcMapa, intencion: Intencion | null): string {
 // ---------------------------------------------------------------- colocación
 
 /**
- * Dónde poner cada cosa en un mapa de 180 × 180 m (`RUN.arena` = 90), en
- * metros desde el punto de salida del jugador. Sugerencias, no reglas.
+ * Dónde poner cada cosa en el sector de 260 × 260 m (`RUN.arena` = 130), en
+ * metros desde el punto de salida del jugador. Sugerencias, no reglas: el
+ * juego busca cada sitio con `World.lugarLibre` (ver MUNDO.md), que evita el
+ * ácido, las laderas y lo que ya está puesto.
  */
 export const COLOCACION = {
-  refugio: { cuantos: 1, distancia: [12, 18] },
+  refugio: { cuantos: 1, distancia: [16, 22] },
   npcs: { junto: 'refugio', radio: [4, 9] },
-  altaresJefe: { cuantos: 3, distancia: [45, 70], separacionMinima: 50 },
-  aras: { cuantos: 3, distancia: [25, 60], separacionMinima: 30 },
-  torres: { cuantos: 4, distancia: [35, 80], separacionMinima: 35 },
-  cofresHelios: { cuantos: 6, distancia: [20, 85], separacionMinima: 15 },
+  altaresJefe: { cuantos: 3, distancia: [60, 100], separacionMinima: 60 },
+  aras: { cuantos: 3, distancia: [30, 80], separacionMinima: 40 },
+  torres: { cuantos: 4, distancia: [45, 110], separacionMinima: 45 },
+  cofresHelios: { cuantos: 6, distancia: [25, 115], separacionMinima: 20 },
 } as const;
