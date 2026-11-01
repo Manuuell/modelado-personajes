@@ -134,6 +134,12 @@ Altares de jefe y de desafío, cajas de premio, estructuras y los NPC de los
 refugios con los que se habla por voz: diseño en [MAPA.md](MAPA.md), datos en
 `src/contenido/mapa.ts`, modelos en `src/modelos/`.
 
+## Mundo e interfaz
+
+El sector donde se juega (montañas, mares de ácido de HELIOS, barrios en
+ruinas) y el HUD del jugador, listos para sustituir a `world.ts` y al HUD de
+`ui.ts`: [MUNDO.md](MUNDO.md), código en `src/mundo/`, taller en `mapa.html`.
+
 ## Hecho significa
 
 - Cada personaje en su archivo `src/modelos/<id>.ts`, registrado en

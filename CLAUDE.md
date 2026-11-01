@@ -15,6 +15,9 @@ personajes que faltan.
   (los tests cargan los módulos directamente en Node).
 - Si cambias `kit.ts` o `tropa.ts`, que siga funcionando todo lo anterior: el
   juego usa los mismos archivos.
+- El mundo y la interfaz están en `src/mundo/` (`mundo.ts` sustituye a
+  `world.ts` del juego y `hud.ts` al HUD de `ui.ts`, con la misma interfaz:
+  no rompas lo que ya llama `game.ts`). Se pasean en `mapa.html`.
 - Los NPC se montan sobre `gente.ts` (un archivo por NPC). Lo que hace cada
   cosa en la partida va en `src/contenido/mapa.ts`: solo datos y funciones
   puras, sin importar nada (lo carga también el servidor de voz).
@@ -48,5 +51,9 @@ $CH --headless=new --use-angle=swiftshader --enable-unsafe-swiftshader --hide-sc
   360 × fotogramas, 520: los fotogramas de un clip en fila, para revisar una
   animación. `&clip=<clip>&t=0.9` posa cualquier otra vista en ese instante.
 - `?glb=<id>` con `--dump-dom` deja el GLB en base64 dentro de `<pre id="glb">`.
+
+El mapa, igual, con `mapa.html` (`--window-size=1600,900`):
+`?vista=jugador|aerea|acido|vadeo|montana|ruinas|refugio|carta`, `&hud=0`
+para quitar la interfaz. Las capturas van en `referencias/mundo/`.
 
 Si el entorno no tiene navegador, basta con `npm run check`.
